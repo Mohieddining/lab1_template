@@ -63,43 +63,67 @@ def build_tram_lines(lines):
                         time_transition[Stop_name[n]][Stop_name[n+1]] = duration
 
         return tram_lines, time_transition
-    
+
+def build_tram_network(stopfile, linefile):
+
+    tram_stops = build_tram_stops(stopfile)
+    tram_lines, time_transition = build_tram_lines(linefile)
+
+    tram_network = {'stops': {}, 'lines': {}, 'times': {}}
+
+    for key, value in tram_stops.items():
+        tram_network['stops'][key] = value
+
+    for key, value in tram_lines.items():
+        tram_network['lines'][key] = value
+
+    for key, value in time_transition.items():
+        tram_network['times'][key] = value
+
+
+    with open(TRAM_FILE, 'w', encoding='utf-8') as json_file:
+        network = json.dump(tram_network, json_file)
+
+
+def lines_via_stop(linedict, stop):
+
+    lines_v_stops = []
+    for key, value in linedict.items():
+        for station in value:
+            if station == stop:
+                lines_v_stops.append(key)
+
+    sorted_lines = sorted(lines_v_stops, key=lambda x: int(x))
+    return sorted_lines
 
 ###########################################################
 
-# tram_stops = build_tram_stops(STOP_FILE)
+tram_stops = build_tram_stops(STOP_FILE)
 tram_lines, time_transition = build_tram_lines(LINE_FILE)
 # print(tram_lines)
 
+def dialogue(tramfile=TRAM_FILE):
 
+    tram_stops = build_tram_stops(STOP_FILE)
+    tram_lines, time_transition = build_tram_lines(LINE_FILE)
 
-def lines_between_stops(linedict, stop1, stop2):
+    with open(TRAM_FILE, 'r', encoding='utf-8'):
+        stop = input('What lines go via ')
+        result = lines_via_stop(tram_lines, stop)
+        if result:
+            print('The lines that go via', stop, 'are: ', result)
+        else:
+            print('No lines goes via', stop)
 
-    start_index = 0
-    end_index = 0
-    stops_btw = []
-    lines_btw_stops = []
+# line_dict = {'1': ['Östra Sjukhuset', 'Tingvallsvägen', 'Kaggeledstorget', 'Ättehögsgatan', 'Munkebäckstorget', 'Lana'], 
+#             '2': ['Östra Sjukhuset', 'Mölndals sjukhus', 'Lackarebäck', 'Krokslätts Fabriker', 'Krokslätts torg', 'Lana']}
 
-    for key, value in linedict.items():
-        for station in value:
-            if stop1 == station:
-                start_index = value.index(stop1)
-            if stop2 == station:
-                end_index = value.index(stop2)
-        
-        if end_index > start_index:
-            stops_btw = value[start_index:end_index + 1]
-        if start_index > end_index:
-            stops_btw = value[end_index:start_index + 1]
+# print(lines_via_stop(line_dict, 'Östra Sjukhuset'))
 
-        if stop1 in stops_btw and stop2 in stops_btw:
-            lines_btw_stops.append(key)
+if __name__ == '__main__':
+    if sys.argv[1:] == ['init']:
+        build_tram_network(STOP_FILE,LINE_FILE)
+    else:
+        dialogue()
 
-    sorted_stops = sorted(lines_btw_stops, key=lambda x: int(x))
-    return sorted_stops
-
-line_dict = {'1': ['Östra Sjukhuset', 'Tingvallsvägen', 'Kaggeledstorget', 'Ättehögsgatan', 'Munkebäckstorget', 'Lana'], 
-            '2': ['Östra Sjukhuset', 'Mölndals sjukhus', 'Lackarebäck', 'Krokslätts Fabriker', 'Krokslätts torg', 'Lana']}
-
-print(lines_between_stops(line_dict, 'Ättehögsgatan', 'Östra Sjukhuset'))
 

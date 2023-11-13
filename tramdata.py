@@ -158,7 +158,7 @@ def time_between_stops(linedict, timedict, line, stop1, stop2):
         print("Stops are not on the same line")
 
 def distance_between_stops(stopdict, stop1, stop2):
-    r = 6371009.0
+    r = 6371009.0   # Radius of Earth
     lat_1 = stopdict[stop1]['lat'] * pi/180
     lon_1 = stopdict[stop1]['lon'] * pi/180
     lat_2 = stopdict[stop2]['lat'] * pi/180
@@ -176,8 +176,25 @@ def answer_query(tramdict, query):
     pass
 
 def dialogue(tramfile=TRAM_FILE):
-    ## YOUR CODE HERE
-    pass
+
+    tram_stops = build_tram_stops(STOP_FILE)
+    tram_lines, time_transition = build_tram_lines(LINE_FILE)
+
+    with open(TRAM_FILE, 'r', encoding='utf-8'):
+
+        while True:
+            # question = input()
+            # if question == 'What lines go via ':
+            stop = input('What lines go via ')
+
+            if stop == 'quit':
+                break
+
+            result = lines_via_stop(tram_lines, stop)
+            if result:
+                print('The lines that go via', stop, 'are: ', result)
+            else:
+                print('No lines goes via', stop)
 
 if __name__ == '__main__':
     if sys.argv[1:] == ['init']:
@@ -199,7 +216,7 @@ if __name__ == '__main__':
 # print(distance_between_stops(tram_stops, 'Mölndals Innerstad', 'Axel Dahlströms Torg'))
 
 # tram_lines, time_transition = build_tram_lines(LINE_FILE)
-# print(lines_via_stop(tram_lines, 'Centralstationen'))
+# # print(lines_via_stop(tram_lines, 'Centralstationen'))
 
-tram_lines, time_transition = build_tram_lines(LINE_FILE)
-print(lines_between_stops(tram_lines, "Korsvägen", "Chalmers"))
+# tram_lines, time_transition = build_tram_lines(LINE_FILE)
+# print(lines_between_stops(tram_lines, "Korsvägen", "Chalmers"))
