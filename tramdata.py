@@ -93,13 +93,40 @@ def build_tram_network(stopfile, linefile):
     # return tram_network
 
 def lines_via_stop(linedict, stop):
-    ## YOUR CODE HERE
-    pass
+
+    lines_v_stops = []
+    for key, value in linedict.items():
+        for station in value:
+            if station == stop:
+                lines_v_stops.append(key)
+
+    sorted_lines = sorted(lines_v_stops, key=lambda x: int(x))
+    return sorted_lines
 
 def lines_between_stops(linedict, stop1, stop2):
-    ## YOUR CODE HERE
-    pass
 
+    start_index = 0
+    end_index = 0
+    stops_btw = []
+    lines_btw_stops = []
+
+    for key, value in linedict.items():
+        for station in value:
+            if stop1 == station:
+                start_index = value.index(stop1)
+            if stop2 == station:
+                end_index = value.index(stop2)
+        
+        if end_index > start_index:
+            stops_btw = value[start_index:end_index + 1]
+        if start_index > end_index:
+            stops_btw = value[end_index:start_index + 1]
+
+        if stop1 in stops_btw and stop2 in stops_btw:
+            lines_btw_stops.append(key)
+
+    sorted_stops = sorted(lines_btw_stops, key=lambda x: int(x))
+    return sorted_stops
 
 def time_between_stops(linedict, timedict, line, stop1, stop2):
     time = 0
@@ -165,8 +192,14 @@ if __name__ == '__main__':
 
 # print(build_tram_network(STOP_FILE, LINE_FILE))
 
-tram_lines, time_transition = build_tram_lines(LINE_FILE)
-print(time_between_stops(tram_lines, time_transition, '2', 'Mölndals Innerstad', 'Axel Dahlströms Torg'))
+# tram_lines, time_transition = build_tram_lines(LINE_FILE)
+# print(time_between_stops(tram_lines, time_transition, '2', 'Mölndals Innerstad', 'Axel Dahlströms Torg'))
 
-tram_stops = build_tram_stops(STOP_FILE)
-print(distance_between_stops(tram_stops, 'Mölndals Innerstad', 'Axel Dahlströms Torg'))
+# tram_stops = build_tram_stops(STOP_FILE)
+# print(distance_between_stops(tram_stops, 'Mölndals Innerstad', 'Axel Dahlströms Torg'))
+
+# tram_lines, time_transition = build_tram_lines(LINE_FILE)
+# print(lines_via_stop(tram_lines, 'Centralstationen'))
+
+tram_lines, time_transition = build_tram_lines(LINE_FILE)
+print(lines_between_stops(tram_lines, "Korsvägen", "Chalmers"))
